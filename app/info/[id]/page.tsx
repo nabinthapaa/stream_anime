@@ -1,9 +1,14 @@
 import InfoSekeleton from "@/skeleton/Info";
 import axios from "axios";
+import { Metadata } from "next";
 import Image from "next/image";
 import { RedirectType, redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Plot } from "./Plot";
+
+export const metadata: Metadata = {
+  title: `Anime 101 - INFO`,
+};
 
 export default function Page({
   params,
@@ -40,6 +45,8 @@ async function Info({
     if (data.totalEpisodes < end) {
       end = data.totalEpisodes;
     }
+    metadata.title = `INFO - ${data.name}`;
+    metadata.description = `${data.plot}`;
     return (
       <div
         id={data.id}
