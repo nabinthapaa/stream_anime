@@ -5,7 +5,9 @@ import GotoForm from "./gotoEp";
 
 export default async function Watch({ params }: { params: { id: string } }) {
   let { id } = params;
-  let { data } = await axios.get(`http://localhost:3000/api/watch?ep_id=${id}`);
+  let { data } = await axios.get(
+    `${process.env.HOSTNAME}/api/watch?ep_id=${id}`
+  );
   return (
     <>
       <div className="px-10 h-fit w-full bg-black">
@@ -23,7 +25,7 @@ export default async function Watch({ params }: { params: { id: string } }) {
 async function Controls({ id }: { id: string }) {
   let animeId = id.replace(/-episode-\d+$/, "");
   let { data } = await axios.get(
-    `http://localhost:3000/api/info?id=${animeId}`
+    `${process.env.HOSTNAME}/api/info?id=${animeId}`
   );
   let episdode = id.match(/\b\d+\b/g) || [];
   let current_episode_number = Number(episdode[episdode.length - 1]);

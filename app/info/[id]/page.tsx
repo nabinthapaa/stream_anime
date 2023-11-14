@@ -2,7 +2,7 @@ import InfoSekeleton from "@/skeleton/Info";
 import axios from "axios";
 import { Metadata } from "next";
 import Image from "next/image";
-import { RedirectType, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { Plot } from "./Plot";
 
@@ -40,7 +40,7 @@ async function Info({
   end: number;
 }) {
   try {
-    const url = `http://localhost:3000/api/info?id=${id}`;
+    const url = `${process.env.HOSTNAME}/api/info?id=${id}`;
     const { data } = await axios.get(url);
     if (data.totalEpisodes < end) {
       end = data.totalEpisodes;

@@ -20,7 +20,7 @@ function Skeleton() {
 }
 
 async function Recent() {
-  const { data } = await axios.get("http://localhost:3000/api/popular");
+  const { data } = await axios.get(`${process.env.HOSTNAME}/api/popular`);
   return data?.results.map((element: any, _: any) => (
     <a
       href={`/info/${element.id}`}
