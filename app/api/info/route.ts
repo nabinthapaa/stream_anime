@@ -1,7 +1,7 @@
 import { GetInfo } from "@/scrapper";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextRequest, res: NextResponse) {
     try {
         console.log(new Date().toISOString() + "\t" + req.method + "\t\t" + req.url + "\t");
         const url = req.url ? new URL(req.url) : null;

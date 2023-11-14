@@ -1,8 +1,8 @@
 import { getAllTimePopular } from "@/scrapper/getAllTimePopular";
 import { URLParser } from "@/utils";
-import { NextApiRequest, NextApiResponse } from "next";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse){
+import { NextRequest, NextResponse } from "next/server";
+export async function GET(req: NextRequest, res: NextResponse){
     try{
         let parser = new URLParser(req.url);
         let page = parser.getParam("page");

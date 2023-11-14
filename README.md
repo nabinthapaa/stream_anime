@@ -16,4 +16,10 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## Getting Ad-free viewing (optional)
 
-You need to setup the api key for the following site
+You need to setup the api key for the following site:
+Setup [https://filelions.com/?op=registration](Filelions) (Recomended One)
+
+```env
+FILELIONS_API_KEY=your_filelions_api_key
+STREAMWISH_API_KEY=your_streamwish_api_key
+```

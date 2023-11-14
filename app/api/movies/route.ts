@@ -1,8 +1,8 @@
 import { getMovies } from "@/scrapper"
 import { URLParser } from "@/utils";
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest, res: NextApiResponse){
+export async function GET(req: NextRequest, res: NextResponse){
     try{
         let parser = new URLParser(req.url);
         let page = parser.getParam("page");

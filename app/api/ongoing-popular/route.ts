@@ -1,8 +1,8 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { NextRequest, NextResponse } from "next/server";
 import { URLParser } from "@/utils";
 import { getOngoingPopular} from '@/scrapper'
 
-export async function GET(req: NextApiRequest, res: NextApiResponse){
+export async function GET(req: NextRequest, res: NextResponse){
     try{
         let parser = new URLParser(req.url);
         let page = parser.getParam("page");

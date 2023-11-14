@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import { getRecent } from "@/scrapper";
+import { NextRequest, NextResponse } from "next/server";
+
 
 const INTERNAL_ERROR = new Error("Something Went Wrong. Please Check your Request");
 const TYPE = {
@@ -8,7 +9,7 @@ const TYPE = {
     CHINESE: 3,
 }
 
-export async function GET(req: NextApiRequest, res: NextApiResponse){
+export async function GET(req: NextRequest, res: NextResponse){
     try{
         if (!req.url) throw INTERNAL_ERROR;
         let url = new URL(req.url);
