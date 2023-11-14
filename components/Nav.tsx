@@ -1,5 +1,3 @@
-import Image from "next/image"
-
 export default function Nav(){
     return(
         <div className="grid grid-cols-2 py-4 bg-green-400">

@@ -1,9 +1,11 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { scrapeCard } from "./scrapeCard";
+import { INTERNAL_ERROR } from "@/utils";
 
 
 export async function getMovies(alph = "", page?: string) {
+    try{
     let url = `https://gogoanimehd.io/anime-movies.html?aph=${alph}&page=${page}`;
     let response = await axios.get(url);
     let data = response.data;
@@ -15,4 +17,7 @@ export async function getMovies(alph = "", page?: string) {
         hasNext: $(".pagination .selected").next().length ? true : false,
     };
     return { meta, results };
+}catch(e:any){
+    throw INTERNAL_ERROR;
+}
 }

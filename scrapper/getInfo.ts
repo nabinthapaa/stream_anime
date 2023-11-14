@@ -60,7 +60,4 @@ export async function GetInfo(id: string) {
   }
 }
 
-// #wrapper_bg > section > section.content_left > div.main_body > div:nth-child(2) > div.anime_info_body_bg > p:nth-child(5)
-// document.querySelector("#wrapper_bg > section > section.content_left > div.main_body > div:nth-child(2) > div.anime_info_body_bg > p:nth-child(5)")
-// //*[@id="wrapper_bg"]/section/section[1]/div[1]/div[2]/div[1]/p[3]
-// document.querySelector("#wrapper_bg > section > section.content_left > div.main_body > div:nth-child(2) > div.anime_info_body_bg > p:nth-child(9)")
+

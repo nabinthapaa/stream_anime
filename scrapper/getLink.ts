@@ -14,7 +14,7 @@ export async function getLink(ep_id: string){
            Links.set(server_name, server_link);
         });
         return Object.fromEntries(Links);
-    }catch(e){
+    }catch(e:any){
         return new Response(JSON.stringify(e), {status:400});
     }
 }

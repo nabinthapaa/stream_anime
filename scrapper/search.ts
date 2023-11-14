@@ -1,9 +1,11 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { scrapeCard } from "./scrapeCard";
+import { NOT_FOUND_ERROR } from "@/utils";
 
 
 export async function search(key: string, page?: number) {
+    try{
     let url = `https://gogoanimehd.io/search.html?keyword=${key.replaceAll(
         " ",
         "%20"
@@ -19,4 +21,7 @@ export async function search(key: string, page?: number) {
         hasNext: $(".pagination .selected").next().length ? true : false,
     };
     return { meta, results };
+}catch(e:any){
+    throw NOT_FOUND_ERROR;
+}
 }
