@@ -16,19 +16,19 @@ export default async function Watch({ params }: { params: { id: string } }) {
         </div>
       </div>
       <Suspense>
-        <Controls id={id} />
+        <Controls ep_id={id} id={data.alias_name} />
       </Suspense>
     </>
   );
 }
 
-async function Controls({ id }: { id: string }) {
+async function Controls({ id, ep_id }: { [key: string]: string }) {
   let animeId = id.replace(/-episode-\d+$/, "");
   let { data } = await axios.get(
     `${process.env.HOSTNAME}/api/info?id=${animeId}`
   );
-  let episdode = id.match(/\b\d+\b/g) || [];
-  let current_episode_number = Number(episdode[episdode.length - 1]);
+  let episode = ep_id.match(/\b\d+\b/g) || [];
+  let current_episode_number = Number(episode[episode.length - 1]);
   let hasNext = data.totalEpisodes > current_episode_number;
   let hasPrev = current_episode_number > 1;
   console.log({
@@ -40,7 +40,9 @@ async function Controls({ id }: { id: string }) {
     <div className="flex justify-between px-3 w-full bg-gray-400 py-2">
       {hasPrev && (
         <a
-          href={`/watch/${animeId}-episode-${current_episode_number - 1}`}
+          href={`/watch/${ep_id.replace(/-episode-\d+$/, "")}-episode-${
+            current_episode_number - 1
+          }`}
           className="font-semibiold bg-green-300 self-end justify-end px-4 py-2 rounded-lg"
         >
           Previous Episode
@@ -49,7 +51,9 @@ async function Controls({ id }: { id: string }) {
       <GotoForm id={animeId} />
       {hasNext && (
         <a
-          href={`/watch/${animeId}-episode-${current_episode_number + 1}`}
+          href={`/watch/${ep_id.replace(/-episode-\d+$/, "")}-episode-${
+            current_episode_number + 1
+          }`}
           className="font-semibiold bg-green-300 self-end justify-end px-4 py-2 rounded-lg"
         >
           Next Episode

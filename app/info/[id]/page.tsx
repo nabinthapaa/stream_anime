@@ -76,7 +76,7 @@ async function Info({
               <p className="  rounded-full text-md font-bold">
                 Status:<span className="font-normal">{" " + data.status}</span>
               </p>
-              <p className="  rounded-full text-md font-bold">
+              <p className="rounded-full text-md font-bold">
                 Aired on:
                 <span className="font-normal">{" " + data.releasedOn}</span>
               </p>
@@ -94,7 +94,7 @@ async function Info({
         <div className="mt-2 w-full flex flex-wrap gap-4 content-start">
           {Array.from({ length: end - start + 1 }).map((_, i) => (
             <a
-              href={`/watch/${id}-episode-${start + i}`}
+              href={`/watch/${data.ep_id}-episode-${start + i}`}
               key={i}
               className="w-20 h-8 border-2 border-green-200 text-center align-middle  ml-2 rounded-md hover:boder-green-100 hover:bg-blue-300 hover:text-white  "
             >

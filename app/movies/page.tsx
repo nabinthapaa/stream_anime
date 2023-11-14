@@ -1,15 +1,58 @@
+import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
 
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  let page = Number(searchParams.page) || 1;
+  let aph = searchParams.aph || "";
+  let letterArray = [];
+  for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++) {
+    letterArray.push(String.fromCharCode(i));
+  }
   return (
-    <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
-      <Suspense fallback={<Skeleton />}>
-        <Recent />
-      </Suspense>
-    </div>
+    <>
+      <div className="container flex flex-wrap gap-2 mt-3 mx-auto">
+        <a
+          className={`${
+            aph === "all" ? "bg-green-300" : "border-green-300"
+          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
+          href={`?page=${page}&aph=all`}
+        >
+          ALL
+        </a>
+        <a
+          className={`${
+            aph === "0" ? "bg-green-300" : "border-green-300"
+          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
+          href={`?page=${page}&aph=0`}
+        >
+          #
+        </a>
+        {letterArray.map((l, i) => (
+          <a
+            key={i + l}
+            className={`${
+              aph === l ? "bg-green-300" : "border-green-300"
+            } border-2 font-bold text-sm px-4 py-2 rounded-lg`}
+            href={`?page=${page}&aph=${l}`}
+          >
+            {l}
+          </a>
+        ))}
+      </div>
+      <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
+        <Suspense fallback={<Skeleton />}>
+          <Movies page={page} aph={aph} />
+        </Suspense>
+      </div>
+      <NextPreviousButton page={page} type={aph} />
+    </>
   );
 }
 
@@ -19,8 +62,12 @@ function Skeleton() {
   ));
 }
 
-async function Recent() {
-  const { data } = await axios.get(`${process.env.HOSTNAME}/api/movies`);
+async function Movies({ page, aph }: { page: number; aph: string | string[] }) {
+  const { data } = await axios.get(
+    `${process.env.HOSTNAME}/api/movies?page=${page}${
+      aph === "all" ? "" : `&aph=${aph}`
+    }`
+  );
   return data?.results.map((element: any, _: any) => (
     <a
       href={`/info/${element.id}`}

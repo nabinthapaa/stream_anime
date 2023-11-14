@@ -1,15 +1,54 @@
+import {
+  default as NextButton,
+  default as NextPreviousButton,
+} from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
 //TODO: Tabs for SUB | DUB | CHINESE
-export default function Page() {
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
+  let page = Number(searchParams?.page) || 1;
+  let type = searchParams.type || "SUB";
   return (
-    <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
-      <Suspense fallback={<Skeleton />}>
-        <Recent />
-      </Suspense>
-    </div>
+    <>
+      <div className="container space-x-4 mt-3 mx-auto">
+        <a
+          className={`${
+            type === "SUB" ? "bg-green-300" : "border-green-300"
+          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
+          href={`?page=${page}&type=SUB`}
+        >
+          SUB
+        </a>
+        <a
+          className={`${
+            type === "DUB" ? "bg-green-300" : "border-green-300"
+          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
+          href={`?page=${page}&type=DUB`}
+        >
+          DUB
+        </a>
+        <a
+          className={`${
+            type === "CHINESE" ? "bg-green-300" : "border-green-300"
+          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
+          href={`?page=${page}&type=CHINESE`}
+        >
+          CHINESE
+        </a>
+      </div>
+      <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
+        <Suspense fallback={<Skeleton />}>
+          <Recent page={page} type={type} />
+        </Suspense>
+      </div>
+      <NextPreviousButton page={page} type={type} />
+    </>
   );
 }
 
@@ -19,8 +58,16 @@ function Skeleton() {
   ));
 }
 
-async function Recent() {
-  const { data } = await axios.get(`${process.env.HOSTNAME}/api/recent`);
+async function Recent({
+  page,
+  type,
+}: {
+  page: number;
+  type: string | string[];
+}) {
+  const { data } = await axios.get(
+    `${process.env.HOSTNAME}/api/recent?page=${page}&type=${type}`
+  );
   return data?.results.map((element: any, _: any) => (
     <a
       href={`/watch/${element.ep_id}`}
