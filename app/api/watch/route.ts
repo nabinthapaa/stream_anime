@@ -40,7 +40,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     let url = req.url ? new URL(req.url) : null;
     let ep_id = url?.searchParams.get("ep_id");
     if (!ep_id) throw new Error("Episode id is not defined");
-    let response: Links = await getLink(ep_id);
+    let response = await getLink(ep_id);
     if (!response.videos) {
       if (!response.links)
         throw new Error("No Links found for the given episode");

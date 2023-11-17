@@ -2,9 +2,12 @@ import { search } from "@/scrapper";
 import { URLParser } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
-    let parser = new URLParser(req.url);
+    const url = req.url || "";
+    let parser = new URLParser(url);
     let name = parser.getParam("q") as string;
     let page = Number(parser.getParam("page")) || 1;
     if (!name) name = "naruto";
