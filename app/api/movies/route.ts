@@ -4,9 +4,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
-    let parser = new URLParser(req.url);
-    let page = parser.getParam("page");
-    let alph = parser.getParam("aph")?.toUpperCase();
+    let page = req.nextUrl.searchParams.get("page");
+    let alph = req.nextUrl.searchParams.get("aph");
     if (!page) page = "1";
     if (!alph) alph = "";
     let response = await getMovies(alph, page);
