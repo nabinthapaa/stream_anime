@@ -1,4 +1,5 @@
 import VideoPlayer from "@/components/VideoPlayer";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import { Suspense } from "react";
 import GotoForm from "./gotoEp";
@@ -23,7 +24,8 @@ export default async function Watch({ params }: { params: { id: string } }) {
 }
 
 async function Controls({ id, ep_id }: { [key: string]: string }) {
-  let { data } = await axios.get(`${process.env.HOSTNAME}/api/info?id=${id}`);
+  if (!HOSTNAME) return null;
+  let { data } = await axios.get(`${HOSTNAME}/api/info?id=${id}`);
   let episode = ep_id.match(/\b\d+\b/g) || [];
   let current_episode_number = Number(episode[episode.length - 1]);
   let hasNext = data.totalEpisodes > current_episode_number;

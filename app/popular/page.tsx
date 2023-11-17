@@ -1,5 +1,6 @@
 import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -73,11 +74,10 @@ async function Popular({
   page: number;
   type?: string | string[];
 }) {
+  if (!HOSTNAME) return null;
   let data: Data | any = {};
   if (type === "og") {
-    const res = await axios.get(
-      `${process.env.HOSTNAME}/api/ongoing-popular?page=${page}`
-    );
+    const res = await axios.get(`${HOSTNAME}/api/ongoing-popular?page=${page}`);
     data = res.data;
   } else {
     const res = await axios.get(

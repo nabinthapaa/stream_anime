@@ -1,5 +1,6 @@
 import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import Image from "next/image";
 import React, { Suspense } from "react";
@@ -30,9 +31,8 @@ function Skeleton() {
 }
 
 async function Results({ term, page }: { term: string; page: number }) {
-  const { data } = await axios.get(
-    `${process.env.HOSTNAME}/api/search?q=${term}`
-  );
+  if (!HOSTNAME) return null;
+  const { data } = await axios.get(`${HOSTNAME}/api/search?q=${term}`);
   return (
     <>
       {data?.results.map((element: any, _: any) => (

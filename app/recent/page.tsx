@@ -3,8 +3,10 @@ import {
   default as NextPreviousButton,
 } from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import Image from "next/image";
+import { hostname } from "os";
 import { Suspense } from "react";
 //TODO: Tabs for SUB | DUB | CHINESE
 export default function Page({
@@ -71,8 +73,9 @@ async function Recent({
   page: number;
   type: string | string[];
 }) {
+  if (!HOSTNAME) return null;
   const { data } = await axios.get(
-    `${process.env.HOSTNAME}/api/recent?page=${page}&type=${type}`
+    `${HOSTNAME}/api/recent?page=${page}&type=${type}`
   );
   return data?.results.map((element: any, _: any) => (
     <a

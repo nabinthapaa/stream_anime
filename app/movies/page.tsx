@@ -1,5 +1,6 @@
 import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -62,10 +63,9 @@ function Skeleton() {
 }
 
 async function Movies({ page, aph }: { page: number; aph: string | string[] }) {
+  if (!HOSTNAME) return null;
   const { data } = await axios.get(
-    `${process.env.HOSTNAME}/api/movies?page=${page}${
-      aph === "all" ? "" : `&aph=${aph}`
-    }`
+    `${HOSTNAME}/api/movies?page=${page}${aph === "all" ? "" : `&aph=${aph}`}`
   );
   return (
     <>
