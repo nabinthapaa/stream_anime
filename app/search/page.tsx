@@ -31,7 +31,7 @@ function Skeleton() {
 
 async function Results({ term, page }: { term: string; page: number }) {
   const { data } = await axios.get(
-    `http://localhost:3000/api/search?q=${term}`
+    `${process.env.HOSTNAME}/api/search?q=${term}`
   );
   return (
     <>
