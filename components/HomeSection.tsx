@@ -31,7 +31,7 @@ const Skeleton = () => {
 }
 
 const Card = async ({link}:{link:string}) => {
-    const url = `http://localhost:3000/api/${link}`
+    const url = `${process.env.HOSTNAME}/api/${link}`
      const {data} = await axios.get(url);
     //@ts-ignore
     return  data?.results && data?.results.map((element, index) => {
