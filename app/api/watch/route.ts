@@ -13,7 +13,7 @@ export interface Links {
     url: string;
     isM3U8: boolean;
     quality: string;
-  };
+  }[];
 }
 
 async function getVideo(link: string | undefined) {

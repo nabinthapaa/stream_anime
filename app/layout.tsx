@@ -15,7 +15,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="font-sans">
+      <body className="font-sans dark:bg-gray-800 dark:text-white">
         <Nav />
         {children}
       </body>

@@ -11,35 +11,28 @@ interface Source extends Links {
   video?: {
     url: string;
   };
-  videos: {
-    url: string;
-    isM3U8: boolean;
-    quality: string;
-  }[];
 }
 
 const VideoPlayer = ({ source }: { source: Source }) => {
   const PlayerRef = useRef<HTMLVideoElement | null>(null);
-  let { doodstream, mp4upload, vidcdn, anime } = source.links;
   useEffect(() => {
     const video = PlayerRef.current;
     if (!video) return;
     let defaultOptions: any = {};
     let url = "";
     if (source.videos) {
-      url = source.videos.filter((e) => e.quality === "default")[0].url;
+      url = source.videos.filter((e: any) => e.quality === "default")[0].url;
     }
     if (!url) {
       if (!source.video) return;
       if (source.video) url = source.video.url;
+      console.log(url);
     }
-    console.log(url);
     if (Hls.isSupported()) {
       const hls = new Hls();
       hls.loadSource(url);
       hls.on(Hls.Events.MANIFEST_PARSED, () => {
         const availableQualities = hls.levels.map((level) => level.height);
-        console.log(availableQualities);
         defaultOptions.controls = [
           "play-large",
           "restart",
@@ -83,6 +76,20 @@ const VideoPlayer = ({ source }: { source: Source }) => {
     }
   }, [source]);
 
+  if (source.links && !source.video) {
+    let { doodstream, mp4upload, vidcdn, anime } = source.links;
+    return (
+      <div className="max-h-[75vh] w-[100%]" id="player">
+        <iframe
+          className="h-[75vh] w-[100%]"
+          src={doodstream || mp4upload || vidcdn || anime}
+          allowFullScreen
+          allow="autoplay"
+        />
+      </div>
+    );
+  }
+
   function renderVideo() {
     if (source.videos) {
       return (
@@ -99,19 +106,6 @@ const VideoPlayer = ({ source }: { source: Source }) => {
           ref={PlayerRef}
           id="video"
         ></video>
-      );
-    }
-
-    {
-      return (
-        <div className="max-h-[75vh] w-[100%]" id="player">
-          <iframe
-            className="h-[75vh] w-[100%]"
-            src={doodstream || mp4upload || vidcdn || anime}
-            allowFullScreen
-            allow="autoplay"
-          />
-        </div>
       );
     }
   }

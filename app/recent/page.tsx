@@ -16,10 +16,12 @@ export default function Page({
   let type = searchParams.type || "SUB";
   return (
     <>
-      <div className="container space-x-4 mt-3 mx-auto">
+      <div className="container space-x-4 mt-6 mx-auto">
         <a
           className={`${
-            type === "SUB" ? "bg-green-300" : "border-green-300"
+            type === "SUB"
+              ? "bg-green-300 dark:bg-green-600"
+              : "border-green-300 dark:border-green-600"
           } border-2 font-bold text-md px-4 py-2 rounded-lg`}
           href={`?page=${page}&type=SUB`}
         >
@@ -27,7 +29,9 @@ export default function Page({
         </a>
         <a
           className={`${
-            type === "DUB" ? "bg-green-300" : "border-green-300"
+            type === "DUB"
+              ? "bg-green-300 dark:bg-green-600"
+              : "border-green-300 dark:border-green-600"
           } border-2 font-bold text-md px-4 py-2 rounded-lg`}
           href={`?page=${page}&type=DUB`}
         >
@@ -35,14 +39,16 @@ export default function Page({
         </a>
         <a
           className={`${
-            type === "CHINESE" ? "bg-green-300" : "border-green-300"
+            type === "CHINESE"
+              ? "bg-green-300 dark:bg-green-600"
+              : "border-green-300 dark:border-green-600"
           } border-2 font-bold text-md px-4 py-2 rounded-lg`}
           href={`?page=${page}&type=CHINESE`}
         >
           CHINESE
         </a>
       </div>
-      <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
+      <div className="container mx-auto mt-10 flex flex-wrap gap-4 last:self-start">
         <Suspense fallback={<Skeleton />}>
           <Recent page={page} type={type} />
         </Suspense>

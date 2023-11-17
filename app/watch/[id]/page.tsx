@@ -23,10 +23,7 @@ export default async function Watch({ params }: { params: { id: string } }) {
 }
 
 async function Controls({ id, ep_id }: { [key: string]: string }) {
-  let animeId = id.replace(/-episode-\d+$/, "");
-  let { data } = await axios.get(
-    `${process.env.HOSTNAME}/api/info?id=${animeId}`
-  );
+  let { data } = await axios.get(`${process.env.HOSTNAME}/api/info?id=${id}`);
   let episode = ep_id.match(/\b\d+\b/g) || [];
   let current_episode_number = Number(episode[episode.length - 1]);
   let hasNext = data.totalEpisodes > current_episode_number;
@@ -48,7 +45,7 @@ async function Controls({ id, ep_id }: { [key: string]: string }) {
           Previous Episode
         </a>
       )}
-      <GotoForm id={animeId} />
+      <GotoForm id={id} />
       {hasNext && (
         <a
           href={`/watch/${ep_id.replace(/-episode-\d+$/, "")}-episode-${

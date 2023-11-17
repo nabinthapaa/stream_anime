@@ -51,7 +51,6 @@ export default function Page({
           <Movies page={page} aph={aph} />
         </Suspense>
       </div>
-      <NextPreviousButton page={page} type={aph} />
     </>
   );
 }
@@ -68,27 +67,38 @@ async function Movies({ page, aph }: { page: number; aph: string | string[] }) {
       aph === "all" ? "" : `&aph=${aph}`
     }`
   );
-  return data?.results.map((element: any, _: any) => (
-    <a
-      href={`/info/${element.id}`}
-      aria-label={"Info " + element.name}
-      key={element.id}
-      className="rounded-md p-4  w-fit space-y-1"
-    >
-      <div className="h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
-        <Image src={element.img} alt={element.name} width={500} height={500} />
-      </div>
-      <div>
-        <div
-          title={element.name}
-          className="w-32 md:w-48 line-clamp-1 overflow-hidden overflow-ellipsis"
+  return (
+    <>
+      {" "}
+      {data?.results.map((element: any, _: any) => (
+        <a
+          href={`/info/${element.id}`}
+          aria-label={"Info " + element.name}
+          key={element.id}
+          className="rounded-md p-4  w-fit space-y-1"
         >
-          <h3 className="font-md text-lg">{element.name}</h3>
-        </div>
-        <div className="h-4 w-1/2 rounded-full max-w-sm">
-          <p className="font-light text-sm">Released: {element.date}</p>
-        </div>
-      </div>
-    </a>
-  ));
+          <div className="h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
+            <Image
+              src={element.img}
+              alt={element.name}
+              width={500}
+              height={500}
+            />
+          </div>
+          <div>
+            <div
+              title={element.name}
+              className="w-32 md:w-48 line-clamp-1 overflow-hidden overflow-ellipsis"
+            >
+              <h3 className="font-md text-lg">{element.name}</h3>
+            </div>
+            <div className="h-4 w-1/2 rounded-full max-w-sm">
+              <p className="font-light text-sm">Released: {element.date}</p>
+            </div>
+          </div>
+        </a>
+      ))}
+      <NextPreviousButton page={page} aph={aph} hasNext={data.meta.hasNext} />
+    </>
+  );
 }

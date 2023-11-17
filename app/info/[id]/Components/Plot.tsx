@@ -5,15 +5,19 @@ export function Plot({ data }: { data: string }) {
   const [showMore, setShowMore] = useState(false);
   const el = useRef<HTMLParagraphElement | null>(null);
   const isOverFlowing = checkOverFlow(el.current);
-  const _ = ["line-clamp-3"];
+  const _ = ["line-clamp-3", "sm:mb-16", "mb-16"];
   return (
-    <div className="w-full  rounded-full ">
-      <p ref={el} className={`text-md ${!showMore ? "line-clamp-3" : ""}`}>
-        {data}
+    <div className={`w-full ${showMore ? "mb-10 sm:mb-16" : ""}`}>
+      <p
+        ref={el}
+        className={`text-md ${!showMore ? "line-clamp-4" : ""}`}
+        dangerouslySetInnerHTML={{ __html: data }}
+      >
+        {/* {data.replaceAll(/<.*>/g, "")} */}
       </p>
       {isOverFlowing && (
         <button
-          className="text-xs font-bold bg-gray-200 rounded-lg py-1 px-2"
+          className="text-xs font-bold bg-gray-200 rounded-lg py-1 px-2 dark:bg-gray-500"
           onClick={() => setShowMore(!showMore)}
         >
           Show {!showMore ? "More" : "Less"}
