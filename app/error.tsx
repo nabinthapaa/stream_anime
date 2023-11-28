@@ -1,4 +1,4 @@
 "use client";
-export default function error() {
-  return <div>error</div>;
+export default function error({error} :{error: Error & { digest?: string }}) {
+  return <div>{error.message}</div>;
 }

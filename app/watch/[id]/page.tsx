@@ -7,7 +7,7 @@ import GotoForm from "./gotoEp";
 export default async function Watch({ params }: { params: { id: string } }) {
   let { id } = params;
   let { data } = await axios.get(
-    `${process.env.HOSTNAME}/api/watch?ep_id=${id}`
+    `${HOSTNAME}/api/watch?ep_id=${id}`
   );
   return (
     <>
@@ -30,11 +30,6 @@ async function Controls({ id, ep_id }: { [key: string]: string }) {
   let current_episode_number = Number(episode[episode.length - 1]);
   let hasNext = data.totalEpisodes > current_episode_number;
   let hasPrev = current_episode_number > 1;
-  console.log({
-    hasNext,
-    hasPrev,
-  });
-
   return (
     <div className="flex justify-between px-3 w-full bg-gray-400 py-2">
       {hasPrev && (

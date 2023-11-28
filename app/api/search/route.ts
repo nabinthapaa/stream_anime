@@ -16,7 +16,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
       status: 200,
     });
   } catch (e: any) {
-    console.log(e);
     return new Response(JSON.stringify({ message: e.message }), {
       status: 500,
     });

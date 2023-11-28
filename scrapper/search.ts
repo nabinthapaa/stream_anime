@@ -6,11 +6,10 @@ import { NOT_FOUND_ERROR } from "@/utils";
 
 export async function search(key: string, page?: number) {
     try{
-    let url = `https://gogoanimehd.io/search.html?keyword=${key.replaceAll(
+    let url = `${process.env.SCRAPE_WEBSITE}/search.html?keyword=${key.replaceAll(
         " ",
         "%20"
     )}&page=${page}`;
-    console.log(url);
     let response = await axios.get(url);
     let data = response.data;
     const $ = cheerio.load(data);

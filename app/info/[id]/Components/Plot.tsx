@@ -1,10 +1,13 @@
 "use client";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function Plot({ data }: { data: string }) {
   const [showMore, setShowMore] = useState(false);
+  const [isOverflowing, setisOverflowing] = useState(true)
   const el = useRef<HTMLParagraphElement | null>(null);
-  const isOverFlowing = checkOverFlow(el.current);
+  useEffect(()=>{
+    if (el.current) setisOverflowing(checkOverFlow(el.current))
+  },[isOverflowing])
   const _ = ["line-clamp-3", "sm:mb-16", "mb-16"];
   return (
     <div className={`w-full ${showMore ? "mb-10 sm:mb-16" : ""}`}>
@@ -15,7 +18,7 @@ export function Plot({ data }: { data: string }) {
       >
         {/* {data.replaceAll(/<.*>/g, "")} */}
       </p>
-      {isOverFlowing && (
+      {isOverflowing && (
         <button
           className="text-xs font-bold bg-gray-200 rounded-lg py-1 px-2 dark:bg-gray-500"
           onClick={() => setShowMore(!showMore)}

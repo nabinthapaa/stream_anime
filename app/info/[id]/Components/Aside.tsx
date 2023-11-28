@@ -1,7 +1,6 @@
 import React from "react";
 
 export default function Aside({ data }: any) {
-  console.log(data);
   return (
     <div className="shadow dark:bg-gray-800 dark:text-white border-2 border-gray-200 rounded-lg h-fit  p-4 space-y-5">
       <div className="space-y-1 ">

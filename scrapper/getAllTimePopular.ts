@@ -5,7 +5,7 @@ import { scrapeCard } from "./scrapeCard";
 
 export async function getAllTimePopular(page?: string){
     try{
-        let url = `https://gogoanimehd.io/popular.html?page=${page}`
+        let url = `${process.env.SCRAPE_WEBSITE}/popular.html?page=${page}`
         let { data } = await axios.get(url);
         let $ = cheerio.load(data);
         //@ts-ignore

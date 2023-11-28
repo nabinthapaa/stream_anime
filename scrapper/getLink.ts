@@ -3,7 +3,7 @@ import axios from "axios";
 import * as cheerio from "cheerio";
 export async function getLink(ep_id: string) {
   try {
-    let url_str = `https://gogoanimehd.io/${ep_id}`;
+    let url_str = `${process.env.SCRAPE_WEBSITE}/${ep_id}`;
     let { data } = await axios.get(
       `https://api.consumet.org/anime/gogoanime/watch/${ep_id}`
     );

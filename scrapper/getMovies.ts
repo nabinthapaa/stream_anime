@@ -6,7 +6,7 @@ import { INTERNAL_ERROR } from "@/utils";
 
 export async function getMovies(alph = "", page?: string) {
     try{
-    let url = `https://gogoanimehd.io/anime-movies.html?aph=${alph}&page=${page}`;
+    let url = `${process.env.SCRAPE_WEBSITE}/anime-movies.html?aph=${alph}&page=${page}`;
     let response = await axios.get(url);
     let data = response.data;
     const $ = cheerio.load(data);

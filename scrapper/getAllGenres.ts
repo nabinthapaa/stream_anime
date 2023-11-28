@@ -3,7 +3,7 @@ import * as cheerio from "cheerio";
 
 export async function getAllGenres(){
     try{
-        let url = "https://gogoanimehd.io/";
+        let url = process.env.SCRAPE_WEBSITE as string;
         let { data } = await axios.get(url);
         let $ = cheerio.load(data);
         let genres: {[key:string]:string | undefined}[] = []

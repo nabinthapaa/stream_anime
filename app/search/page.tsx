@@ -42,13 +42,18 @@ async function Results({ term, page }: { term: string; page: number }) {
           key={element.id}
           className="rounded-md p-4  w-fit space-y-1"
         >
-          <div className="h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
+          <div className="relative h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
             <Image
               src={element.img}
               alt={element.name}
               width={500}
               height={500}
             />
+            {element.isDub ? (
+              <span className="absolute  text-md font-bold px-4 py-1 bg-red-800 top-0 right-0">
+                Dub
+              </span>
+            ) : null}
           </div>
           <div>
             <div
@@ -57,8 +62,8 @@ async function Results({ term, page }: { term: string; page: number }) {
             >
               <h3 className="font-md text-lg">{element.name}</h3>
             </div>
-            <div className="h-4 w-1/2 rounded-full max-w-sm">
-              <p className="font-light text-sm">Released: {element.date}</p>
+            <div className="h-4 w-full rounded-full max-w-sm">
+              <p className="font-light text-sm">Released: {element.date} </p>
             </div>
           </div>
         </a>

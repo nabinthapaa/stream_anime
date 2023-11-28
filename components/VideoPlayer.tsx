@@ -26,7 +26,6 @@ const VideoPlayer = ({ source }: { source: Source }) => {
     if (!url) {
       if (!source.video) return;
       if (source.video) url = source.video.url;
-      console.log(url);
     }
     if (Hls.isSupported()) {
       const hls = new Hls();

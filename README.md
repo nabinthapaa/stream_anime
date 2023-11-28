@@ -22,4 +22,5 @@ Setup [https://filelions.com/?op=registration](Filelions) (Recomended One)
 ```env
 FILELIONS_API_KEY=your_filelions_api_key
 STREAMWISH_API_KEY=your_streamwish_api_key
+SCRAPE_WEBSITE=https://gogoanime3.net
 ```

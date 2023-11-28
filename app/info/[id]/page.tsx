@@ -1,4 +1,5 @@
 import InfoSekeleton from "@/skeleton/Info";
+import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -24,9 +25,8 @@ export default function Page({
   const { id } = params;
   const start = Number(searchParams.start || 1);
   const end = Number(searchParams.end || TOTAL_EPISODES);
-  console.log({ start, end });
   return (
-    <div className="">
+    <div>
       <Suspense fallback={<InfoSekeleton />}>
         <Info id={id} start={start} end={end} />
       </Suspense>
@@ -44,7 +44,7 @@ async function Info({
   end: number;
 }) {
   try {
-    const url = `${process.env.HOSTNAME}/api/info?id=${id}`;
+    const url = `${HOSTNAME}/api/info?id=${id}`;
     const { data } = await axios.get(url);
     if (data.totalEpisodes < end) {
       end = data.totalEpisodes;
@@ -116,17 +116,17 @@ async function Info({
                           fill
                           className="object-cover"
                         />
-                        <p className="absolute z-[10] font-bold bottom-0 right-0 px-4 text-white bg-gray-500 ">
+                        <div className="absolute z-[10] font-bold bottom-0 right-0 px-4 text-white bg-gray-500 ">
                           {(data.duration || 24) + ":00"}
-                        </p>
+                        </div>
                       </div>
                       <div className="w-64 p-2">
-                        <p className="font-bold text-md truncate">
+                        <div className="font-bold text-md truncate">
                           {"Episode " +
                             Math.floor(start + i) +
                             " : " +
                             data.name}
-                        </p>
+                        </div>
                       </div>
                     </a>
                   ))}
@@ -138,7 +138,6 @@ async function Info({
       </div>
     );
   } catch (e: any) {
-    console.log(e);
     redirect("/not-found");
   }
 }

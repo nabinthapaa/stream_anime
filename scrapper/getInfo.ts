@@ -4,7 +4,7 @@ import * as cheerio from "cheerio";
 
 export async function GetInfo(id: string) {
   try {
-    let url = `https://gogoanimehd.io/category/${id}`;
+    let url = `${process.env.SCRAPE_WEBSITE}/category/${id}`;
     let response = await axios.get(url);
     let html = response.data;
 
@@ -19,10 +19,7 @@ export async function GetInfo(id: string) {
       .find("p:nth-child(5)")
       .text()
       .replace(/^Plot Summary:\s*/gm, "");
-    let otherNames = anime_details
-      .find("p:nth-child(9)")
-      .text()
-      .replace(/^Other name:\s*/gm, "");
+
     let status = anime_details
       .find("p:nth-child(8)")
       .text()
@@ -51,7 +48,6 @@ export async function GetInfo(id: string) {
       .attr("href")
       ?.replace(/.*\//, "")
       .replace(/-episode-\d+$/, "");
-    console.log({ alias_name });
     return {
       movie_id,
       gogo_id: id,
@@ -63,7 +59,6 @@ export async function GetInfo(id: string) {
       totalEpisodes,
       status,
       releasedOn,
-      otherNames: !isDubbed ? otherNames.split(";") : otherNames.split(","),
       poster,
       plot,
       ep_id,
