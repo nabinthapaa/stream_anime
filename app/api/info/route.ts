@@ -3,6 +3,9 @@ import { URLParser } from "@/utils";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "./Query";
+
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const url = new URLParser(req.url);
