@@ -1,6 +1,6 @@
 import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
-import { HOSTNAME } from "@/utils";
+import config from "@/utils/config";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -64,8 +64,11 @@ function Skeleton() {
 
 async function Movies({ page, aph }: { page: number; aph: string | string[] }) {
   try {
-    if (!HOSTNAME) return null;
-    const { data } = await axios.post(`${HOSTNAME}/api/movies`, { page, aph });
+    if (!config.hostname) return null;
+    const { data } = await axios.post(`${config.hostname}/api/movies`, {
+      page,
+      aph,
+    });
     return (
       <>
         {" "}
@@ -105,7 +108,7 @@ async function Movies({ page, aph }: { page: number; aph: string | string[] }) {
         <NextPreviousButton page={page} aph={aph} hasNext={data.meta.hasNext} />
       </>
     );
-  } catch (e:any) {
-    return <span>{e.message}</span>
+  } catch (e: any) {
+    return <span>{e.message}</span>;
   }
 }

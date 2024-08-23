@@ -1,5 +1,5 @@
 import CardSkeleton from "@/skeleton/Card";
-import { HOSTNAME } from "@/utils";
+import config from "@/utils/config";
 import axios from "axios";
 import Image from "next/image";
 import React, { Suspense } from "react";
@@ -41,10 +41,9 @@ const Skeleton = () => {
 };
 
 const Card = async ({ link }: { link: string }) => {
-  if (!HOSTNAME) return null;
-  const url = `${HOSTNAME}/api/${link}`;
+  if (!config.hostname) return null;
+  const url = `${config.hostname}/api/${link}`;
   const { data } = await axios.get(url);
-  //@ts-ignore
   return (
     data?.results &&
     data?.results.map((element: any, index: number) => {

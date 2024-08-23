@@ -2,7 +2,7 @@ import { getRecent } from "@/scrapper";
 import { NextRequest, NextResponse } from "next/server";
 
 const INTERNAL_ERROR = new Error(
-  "Something Went Wrong. Please Check your Request"
+  "Something Went Wrong. Please Check your Request",
 );
 const TYPE = {
   SUB: 1,

@@ -2,12 +2,11 @@ import { getMovies } from "@/scrapper";
 import { URLParser } from "@/utils";
 import { NextRequest, NextResponse } from "next/server";
 
-
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function POST(req: NextRequest, res: NextResponse) {
   try {
-    let parser = new URLParser(req.url)
-    let page = parser.getParam("page")
-    let aph = parser.getParam("aph")
+    let parser = new URLParser(req.url);
+    let page = parser.getParam("page");
+    let aph = parser.getParam("aph");
     if (!page) page = "1";
     if (!aph) aph = "";
     let response = await getMovies(aph, page);

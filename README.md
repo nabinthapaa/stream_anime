@@ -14,13 +14,10 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Getting Ad-free viewing (optional)
-
-You need to setup the api key for the following site:
-Setup [https://filelions.com/?op=registration](Filelions) (Recomended One)
+## Setting up environment file
 
 ```env
-FILELIONS_API_KEY=your_filelions_api_key
-STREAMWISH_API_KEY=your_streamwish_api_key
-SCRAPE_WEBSITE=https://gogoanime3.net
+NEXT_PUBLIC_HOSTNAME="http://localhost:3000"
+SCRAPE_WEBSITE="https://gogoanime3.co"
+GOGO_CDN="https://ajax.gogocdn.net/ajax"
 ```

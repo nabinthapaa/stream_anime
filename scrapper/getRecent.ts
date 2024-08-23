@@ -1,6 +1,7 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
 import { scrapeCard } from "./scrapeCard";
+import config from "@/utils/config";
 
 interface Recent {
   [key: string]: string | undefined;
@@ -8,7 +9,7 @@ interface Recent {
 
 export async function getRecent(page: string, type: number) {
   try {
-    let url = `https://ajax.gogo-load.com/ajax/page-recent-release.html?page=${page}&type=${type}`;
+    let url = `${config.gogoCDN}/page-recent-release.html?page=${page}&type=${type}`;
     let { data } = await axios.get(url);
     let $ = cheerio.load(data);
     //@ts-ignore

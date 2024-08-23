@@ -1,14 +1,19 @@
 import VideoPlayer from "@/components/VideoPlayer";
-import { HOSTNAME } from "@/utils";
 import axios from "axios";
 import { Suspense } from "react";
 import GotoForm from "./gotoEp";
+import { redirect } from "next/navigation";
+import config from "@/utils/config";
 
 export default async function Watch({ params }: { params: { id: string } }) {
   let { id } = params;
-  let { data } = await axios.get(
-    `${HOSTNAME}/api/watch?ep_id=${id}`
-  );
+  let data;
+  try{
+    let response = await axios.get( `${config.hostname}/api/watch?ep_id=${id}`)
+    data = response.data
+  }catch(err){
+    redirect("/not-found")
+  }
   return (
     <>
       <div className="px-10 h-fit w-full bg-black">
@@ -24,8 +29,8 @@ export default async function Watch({ params }: { params: { id: string } }) {
 }
 
 async function Controls({ id, ep_id }: { [key: string]: string }) {
-  if (!HOSTNAME) return null;
-  let { data } = await axios.get(`${HOSTNAME}/api/info?id=${id}`);
+  if (!config.hostname) return null;
+  let { data } = await axios.get(`${config.hostname}/api/info?id=${id}`);
   let episode = ep_id.match(/\b\d+\b/g) || [];
   let current_episode_number = Number(episode[episode.length - 1]);
   let hasNext = data.totalEpisodes > current_episode_number;

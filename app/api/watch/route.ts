@@ -41,25 +41,9 @@ export async function GET(req: NextRequest, res: NextResponse) {
     let ep_id = url?.searchParams.get("ep_id");
     if (!ep_id) throw new Error("Episode id is not defined");
     let response = await getLink(ep_id);
-    if (!response.videos) {
-      if (!response.links)
-        throw new Error("No Links found for the given episode");
-
-      if (Object.keys(response.links).includes("filelions")) {
-        let video = await getVideo(response.links.filelions);
-
-        if (!video && Object.keys(response.links).includes("streamwish"))
-          video = await getVideo(response.links.streamwish);
-
-        return new Response(JSON.stringify({ video, ...response }), {
-          status: 200,
-        });
-      }
-      return new Response(JSON.stringify(response), {
-        status: 200,
-      });
-    }
-    return new Response(JSON.stringify(response), { status: 200 });
+    return new Response(JSON.stringify(response), {
+      status: 200,
+    });
   } catch (e: any) {
     return new Response(JSON.stringify({ message: e.message, status: 500 }), {
       status: 500,

@@ -1,5 +1,6 @@
 "use client";
 
+import { NOT_FOUND_ERROR } from "@/utils";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -8,7 +9,11 @@ export default function GotoForm({ id }: { id: string }) {
   let router = useRouter();
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    router.push(`/watch/${id}-episode-${ep}`);
+    try {
+      router.push(`/watch/${id}-episode-${ep}`);
+    } catch (error) {
+      throw NOT_FOUND_ERROR;
+    }
   };
 
   return (

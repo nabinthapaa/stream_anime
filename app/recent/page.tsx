@@ -1,14 +1,10 @@
-import {
-  default as NextButton,
-  default as NextPreviousButton,
-} from "@/components/NextButton";
+import { default as NextPreviousButton } from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
-import { HOSTNAME } from "@/utils";
+import config from "@/utils/config";
 import axios from "axios";
 import Image from "next/image";
-import { hostname } from "os";
 import { Suspense } from "react";
-//TODO: Tabs for SUB | DUB | CHINESE
+
 export default function Page({
   searchParams,
 }: {
@@ -73,9 +69,9 @@ async function Recent({
   page: number;
   type: string | string[];
 }) {
-  if (!HOSTNAME) return null;
+  if (!config.hostname) return null;
   const { data } = await axios.get(
-    `${HOSTNAME}/api/recent?page=${page}&type=${type}`
+    `${config.hostname}/api/recent?page=${page}&type=${type}`,
   );
   return data?.results.map((element: any, _: any) => (
     <a

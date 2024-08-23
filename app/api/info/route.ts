@@ -1,6 +1,5 @@
 import { GetInfo } from "@/scrapper";
 import { URLParser } from "@/utils";
-import { InfoData } from "@/utils/interface";
 import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { query } from "./Query";
@@ -12,7 +11,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (!id) throw new Error('Please Provide "id"');
     let response = await GetInfo(id);
     try {
-      const search = response.ep_id?.replace("-dub","");
+      const search = response.ep_id?.replace("-dub", "");
       const variables = { search, type };
       if (!search) throw new Error();
       const anilist_endpoint = "https://graphql.anilist.co";
@@ -47,7 +46,7 @@ export async function GET(req: NextRequest, res: NextResponse) {
         message: e.message,
         status: 500,
       }),
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

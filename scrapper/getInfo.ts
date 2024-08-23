@@ -1,10 +1,11 @@
 import { NOT_FOUND_ERROR } from "@/utils";
 import axios from "axios";
 import * as cheerio from "cheerio";
+import config from "@/utils/config";
 
 export async function GetInfo(id: string) {
   try {
-    let url = `${process.env.SCRAPE_WEBSITE}/category/${id}`;
+    let url = `${config.website}/category/${id}`;
     let response = await axios.get(url);
     let html = response.data;
 
@@ -37,11 +38,11 @@ export async function GetInfo(id: string) {
       });
     let type = anime_details.find("[href^='/sub-category/']").text().trim();
     let totalEpisodes = Number(
-      $("#episode_page li").last().find("a").attr("ep_end")
+      $("#episode_page li").last().find("a").attr("ep_end"),
     );
     let poster = anime_details.find("img").attr("src");
 
-    let ep_url = `https://ajax.gogo-load.com/ajax/load-list-episode?ep_start=0&ep_end=1&id=${movie_id}&default_ep=0&alias=${alias_name}`;
+    let ep_url = `${config.gogoCDN}/load-list-episode?ep_start=0&ep_end=1&id=${movie_id}&default_ep=0&alias=${alias_name}`;
     let { data } = await axios.get(ep_url);
     let $_ = cheerio.load(data);
     let ep_id = $_("#episode_related > li:nth-child(1) > a")

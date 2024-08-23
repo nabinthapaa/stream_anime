@@ -8,6 +8,7 @@ import { Suspense } from "react";
 import Aside from "./Components/Aside";
 import { Plot } from "./Components/Plot";
 import SimpleStatus from "./Components/SimpleStatus";
+import config from "@/utils/config";
 
 export const metadata: Metadata = {
   title: `Anime 101 - INFO`,
@@ -44,7 +45,7 @@ async function Info({
   end: number;
 }) {
   try {
-    const url = `${HOSTNAME}/api/info?id=${id}`;
+    const url = `${config.hostname}/api/info?id=${id}`;
     const { data } = await axios.get(url);
     if (data.totalEpisodes < end) {
       end = data.totalEpisodes;
@@ -164,8 +165,8 @@ function Episodes({ totalEp, name, thumbnail, time }: Episode) {
       i < q_ep
         ? temp + TOTAL_EPISODES
         : r_ep < TOTAL_EPISODES
-        ? start + r_ep - 1
-        : temp + TOTAL_EPISODES;
+          ? start + r_ep - 1
+          : temp + TOTAL_EPISODES;
     start = end + 1;
     return (
       <a

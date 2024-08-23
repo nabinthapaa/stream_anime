@@ -1,4 +1,5 @@
 import { INTERNAL_ERROR } from "@/utils";
+import config from "@/utils/config";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
@@ -20,7 +21,7 @@ function getImage(url: string | undefined) {
 
 export async function getOngoingPopular(page: string) {
   try {
-    let url = `https://ajax.gogo-load.com/ajax/page-recent-release-ongoing.html?page=${page}`;
+    let url = `${config.gogoCDN}/page-recent-release-ongoing.html?page=${page}`;
     let { data } = await axios.get(url);
     let $ = cheerio.load(data);
     let all_ongoing: Ongoing[] = [];

@@ -1,6 +1,6 @@
 import NextPreviousButton from "@/components/NextButton";
 import CardSkeleton from "@/skeleton/Card";
-import { HOSTNAME } from "@/utils";
+import config from "@/utils/config";
 import axios from "axios";
 import Image from "next/image";
 import { Suspense } from "react";
@@ -74,13 +74,15 @@ async function Popular({
   page: number;
   type?: string | string[];
 }) {
-  if (!HOSTNAME) return null;
+  if (!config.hostname) return null;
   let data: Data | any = {};
   if (type === "og") {
-    const res = await axios.get(`${HOSTNAME}/api/ongoing-popular?page=${page}`);
+    const res = await axios.get(
+      `${config.hostname}/api/ongoing-popular?page=${page}`,
+    );
     data = res.data;
   } else {
-    const res = await axios.get(`${HOSTNAME}/api/popular?page=${page}`);
+    const res = await axios.get(`${config.hostname}/api/popular?page=${page}`);
     data = res.data;
   }
   return data?.results.map((element: Element, _: number) => (
@@ -110,11 +112,11 @@ async function Popular({
             {element.date
               ? `Released ${element.date}`
               : element.genres
-              ? element.genres.map((e, i) => {
-                  if (i > 1) return null;
-                  return <Genres key={e} genre={e} i={i} />;
-                })
-              : "( Sub )"}
+                ? element.genres.map((e, i) => {
+                    if (i > 1) return null;
+                    return <Genres key={e} genre={e} i={i} />;
+                  })
+                : "( Sub )"}
           </p>
         </div>
       </div>
@@ -126,6 +128,12 @@ function titleCase(word: string) {
   return word.charAt(0).toUpperCase() + word.substring(1);
 }
 
-function Genres({ genre, i }: { genre: string, i:number }) {
-  return <span className={`${i !==0? "ml-2":""} text-xs px-2 bg-purple-500 py-1 rounded-lg`}>{titleCase(genre)}</span>;
+function Genres({ genre, i }: { genre: string; i: number }) {
+  return (
+    <span
+      className={`${i !== 0 ? "ml-2" : ""} text-xs px-2 bg-purple-500 py-1 rounded-lg`}
+    >
+      {titleCase(genre)}
+    </span>
+  );
 }
