@@ -31,6 +31,7 @@ import {
   VolumeGlyph,
 } from "./icons";
 import { ProgressBar } from "./ProgressBar";
+import { removeContinueWatching, saveContinueWatching } from "../storage/library";
 import { progressFraction, readProgress, writeProgress } from "./progress";
 import { formatTime } from "./time";
 
@@ -66,8 +67,23 @@ export interface PlayerProps {
   advisory?: string;
   /** Wide series art for episode thumbnails (raw URL; goes through the image optimizer) */
   artwork?: string;
-  /** Where the error state's "source list" link points */
-  sourcesHref?: string;
+  /**
+   * Series identity for the home page's "Continue Watching" row (localStorage).
+   * Omit to leave no trace. The record is per series and advances when an episode ends.
+   */
+  continueWatching?: {
+    /** Anime id */
+    id: string;
+    title: string;
+    /** Wide art for the row card */
+    image?: string;
+    /** Episode id being watched, e.g. "k1r85-episode-3" */
+    epId: string;
+    epNumber?: number;
+    /** Where the record moves when this episode finishes; omitted = last episode */
+    nextEpId?: string;
+    nextEpNumber?: number;
+  };
 }
 
 const HIDE_AFTER_MS = 3000;
@@ -118,7 +134,7 @@ export function Player({
   synopsis,
   advisory,
   artwork,
-  sourcesHref = "#video-sources",
+  continueWatching,
 }: PlayerProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -156,12 +172,18 @@ export function Player({
   const upNextCancelled = useRef(false);
   const advisoryShown = useRef(false);
   const wasStarted = useRef(false);
+  /** The episode list is centred on the current episode once per opening, not per render. */
+  const centered = useRef(false);
+  const cwRef = useRef(continueWatching);
+  /** This episode reached the end: stop refreshing its Continue Watching record. */
+  const finished = useRef(false);
   const tapState = useRef<{ time: number; zone: number; timer?: number }>({ time: 0, zone: -1 });
 
   const src = sources[sourceIndex];
   const visible = !pauseScreen && (chromeVisible || paused || panel !== null || failed || !started);
 
   const openPanel = (next: Panel) => {
+    if (next !== "episodes") centered.current = false;
     panelRef.current = next;
     setPanel(next);
     if (next) {
@@ -208,6 +230,10 @@ export function Player({
     // Near the end counts as watched (full progress bar, no resume prompt).
     const t = video.duration - video.currentTime < 30 ? video.duration : video.currentTime;
     writeProgress(storageKey, t, video.duration);
+    const cw = cwRef.current;
+    if (cw && !finished.current) {
+      saveContinueWatching({ id: cw.id, title: cw.title, image: cw.image, epId: cw.epId, epNumber: cw.epNumber, t, d: video.duration });
+    }
   }, [storageKey]);
 
   const togglePlay = useCallback(() => {
@@ -370,6 +396,10 @@ export function Player({
   }, [upNext, goNext]);
 
   useEffect(() => {
+    cwRef.current = continueWatching;
+  }, [continueWatching]);
+
+  useEffect(() => {
     const onChange = () => setFullscreen(document.fullscreenElement === containerRef.current);
     document.addEventListener("fullscreenchange", onChange);
     return () => document.removeEventListener("fullscreenchange", onChange);
@@ -497,8 +527,8 @@ export function Player({
       className={cn(
         "group/player relative isolate w-full overflow-hidden bg-black text-white select-none",
         GAPS,
-        // Theater: fills the viewport; phones in portrait keep 16:9, landscape goes full height.
-        fullscreen ? "h-full" : "aspect-video md:aspect-auto md:h-svh landscape:aspect-auto landscape:h-svh",
+        // Theater: the player owns the viewport (dvh so mobile browser chrome is excluded).
+        fullscreen ? "h-full" : "h-dvh",
         !visible && "cursor-none",
       )}
       onPointerMove={(e) => e.pointerType === "mouse" && showChrome()}
@@ -547,6 +577,24 @@ export function Player({
         onEnded={() => {
           const video = videoRef.current;
           if (video && Number.isFinite(video.duration)) writeProgress(storageKey, video.duration, video.duration);
+          finished.current = true;
+          const cw = cwRef.current;
+          if (cw) {
+            // Move the series on to the next episode, or drop it from the row entirely.
+            if (cw.nextEpId) {
+              saveContinueWatching({
+                id: cw.id,
+                title: cw.title,
+                image: cw.image,
+                epId: cw.nextEpId,
+                epNumber: cw.nextEpNumber,
+                t: 0,
+                d: 0,
+              });
+            } else {
+              removeContinueWatching(cw.id);
+            }
+          }
           if (nextEpisode && !upNextCancelled.current) setUpNext((u) => u ?? { remaining: UP_NEXT_COUNTDOWN });
         }}
         onError={onError}
@@ -948,9 +996,13 @@ export function Player({
                       ref={
                         ep.current
                           ? (el) => {
-                              // Centre the current episode inside the list without scrolling the page.
+                              // Centre the current episode inside the list (once per opening,
+                              // so re-renders never yank a long list back), not the page.
+                              if (centered.current) return;
                               const list = el?.closest("ol");
-                              if (el && list) list.scrollTop = el.offsetTop - list.clientHeight / 2;
+                              if (!el || !list) return;
+                              centered.current = true;
+                              list.scrollTop = el.offsetTop - list.clientHeight / 2;
                             }
                           : undefined
                       }
@@ -1026,9 +1078,13 @@ export function Player({
               >
                 Retry
               </button>
-              <a href={sourcesHref} className="inline-flex h-11 items-center rounded-md bg-white/15 px-5 text-sm font-medium hover:bg-white/25">
-                View sources
-              </a>
+              <BackLink
+                href={backHref}
+                replace
+                className="inline-flex h-11 items-center rounded-md bg-white/15 px-5 text-sm font-medium hover:bg-white/25"
+              >
+                Series details
+              </BackLink>
               {prevEpisode && (
                 <Link href={prevEpisode.href} className="inline-flex h-11 items-center rounded-md px-3 text-sm text-white/70 hover:text-white">
                   {prevEpisode.label}

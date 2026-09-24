@@ -16,6 +16,8 @@ export interface PosterCardProps {
   badge?: string;
   /** Accent label, e.g. "EP 12" (top-left, clear of the title) */
   edgeBadge?: string;
+  /** Watched fraction (0..1): thin accent bar along the bottom of the art */
+  progress?: number;
   /** Kept for API compatibility; the card body always opens its href */
   action?: "play" | "info";
   sizes: string;
@@ -30,7 +32,7 @@ export interface PosterCardProps {
  * Netflix-style 16:9 card. The art carries no title logo, so the title sits on a bottom
  * scrim (2 lines max). Hover effects use transforms only, so neighbours never shift.
  */
-export function PosterCard({ href, title, image, meta, badge, edgeBadge, sizes, variant = "grid" }: PosterCardProps) {
+export function PosterCard({ href, title, image, meta, badge, edgeBadge, progress, sizes, variant = "grid" }: PosterCardProps) {
   const src = imageSrc(image);
   const detailsId = href.startsWith("/info/") ? decodeURIComponent(href.slice("/info/".length)) : undefined;
   const isGrid = variant === "grid";
@@ -76,6 +78,14 @@ export function PosterCard({ href, title, image, meta, badge, edgeBadge, sizes, 
         {edgeBadge && (
           <span className="absolute top-2 left-2 rounded-sm bg-accent-strong px-1.5 py-0.5 text-[0.6875rem] leading-4 font-semibold tracking-wide whitespace-nowrap text-white uppercase shadow-sm">
             {edgeBadge}
+          </span>
+        )}
+        {progress !== undefined && (
+          <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-[3px] bg-white/25">
+            <span
+              className="block h-full origin-left bg-accent"
+              style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress))})` }}
+            />
           </span>
         )}
         {badge && (

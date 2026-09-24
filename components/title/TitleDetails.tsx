@@ -1,5 +1,6 @@
 import { Plot } from "@/app/info/[id]/Components/Plot";
 import { Fragment } from "react";
+import { ListButton } from "../storage/ListButton";
 import { ButtonLink } from "../ui/Button";
 import { formatFormat, formatSeason, formatStatus, imageSrc, ratingLabel } from "../ui/format";
 import { DETAILS_HEADING_ID } from "../ui/layout";
@@ -86,6 +87,7 @@ export function TitleDetails({
               <ButtonLink href={first.href} size="lg" icon={<PlayIcon className="size-6" />} className="px-6 sm:px-8">
                 {episodes.length > 1 ? `Play E${first.number}` : "Play"}
               </ButtonLink>
+              <ListButton entry={{ id, title, image: wide ?? poster }} />
               {episodes.length > 1 && (
                 <ButtonLink href={latest.href} variant="secondary" size="lg" className="px-5">
                   Latest &middot; E{latest.number}

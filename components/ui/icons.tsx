@@ -111,3 +111,15 @@ export const ChevronDownIcon = (props: IconProps) => (
     <path d="m6 9 6 6 6-6" />
   </Svg>
 );
+
+export const PlusIcon = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="M12 5v14M5 12h14" />
+  </Svg>
+);
+
+export const CheckIcon = (props: IconProps) => (
+  <Svg {...props}>
+    <path d="m5 12.5 4.5 4.5L19 7.5" />
+  </Svg>
+);

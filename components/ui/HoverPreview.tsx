@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState, type FocusEvent, type PointerEvent, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { ListButton } from "../storage/ListButton";
 import { cn } from "./cn";
 import { formatFormat, imageSrc, infoHref, ratingLabel } from "./format";
 import { ChevronDownIcon, PlayIcon } from "./icons";
@@ -285,6 +286,11 @@ function PreviewCard({
                 <PlayIcon className="size-5 translate-x-px" />
               </span>
             )}
+            <ListButton
+              entry={{ id: preview.id, title: preview.title, image: preview.image }}
+              size="sm"
+              tabIndex={-1}
+            />
             <Link
               href={detailsHref}
               scroll={false}

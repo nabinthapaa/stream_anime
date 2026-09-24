@@ -272,6 +272,8 @@ export function DetailsHost() {
       // Links elsewhere (e.g. the preview's Play button) keep their own behaviour.
       const anchor = target.closest<HTMLElement>("a[href]");
       if (anchor && !(anchor.getAttribute("href") ?? "").startsWith("/info/")) return;
+      // Controls inside a trigger (e.g. the My List toggle) keep their own behaviour.
+      if (target.closest("[data-details-ignore]")) return;
       const source = target.closest<HTMLElement>("[data-details-id]");
       if (!source?.dataset.detailsId) return;
 
