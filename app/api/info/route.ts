@@ -1,12 +1,12 @@
 import { GetInfo } from "@/scrapper";
 import { URLParser } from "@/utils";
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { query } from "./Query";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     const url = new URLParser(req.url);
     const id = url.getParam("id");
@@ -14,7 +14,8 @@ export async function GET(req: NextRequest, res: NextResponse) {
     if (!id) throw new Error('Please Provide "id"');
     let response = await GetInfo(id);
     try {
-      const search = response.ep_id?.replace("-dub", "");
+      // Titles match AniList far better than slugs ("one-piece" finds a music video)
+      const search = response.name || response.ep_id?.replace("-dub", "");
       const variables = { search, type };
       if (!search) throw new Error();
       const anilist_endpoint = "https://graphql.anilist.co";

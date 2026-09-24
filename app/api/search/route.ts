@@ -1,10 +1,10 @@
 import { search } from "@/scrapper";
 import { URLParser } from "@/utils";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     const url = req.url || "";
     let parser = new URLParser(url);

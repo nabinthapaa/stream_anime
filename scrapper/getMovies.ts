@@ -1,21 +1,19 @@
-import axios from "axios";
-import * as cheerio from "cheerio";
-import { scrapeCard } from "./scrapeCard";
 import { INTERNAL_ERROR } from "@/utils";
-import config from "@/utils/config";
+import { load, paginate, parseTiles, toSeriesCard } from "./helpers";
 
 export async function getMovies(alph = "", page?: string) {
   try {
-    let url = `${config.website}/anime-movies.html?aph=${alph}&page=${page}`;
-    let { data } = await axios.get(url);
-    const $ = cheerio.load(data);
-    //@ts-ignore
-    let results = scrapeCard($(".last_episodes").html(), true);
-    let meta = {
-      totalResults: results.length,
-      hasNext: $(".pagination .selected").next().length ? true : false,
-    };
-    return { meta, results };
+    let $ = await load("/tags.php?tag=Movie");
+    let movies = parseTiles($).map(toSeriesCard);
+    // "0" = titles starting with a digit or symbol, a letter = that letter, "" / "all" = everything
+    if (alph && alph !== "all") {
+      movies = movies.filter((movie) => {
+        let first = movie.name.charAt(0).toUpperCase();
+        return alph === "0" ? !/[A-Z]/.test(first) : first === alph.toUpperCase();
+      });
+    }
+    let { results, hasNext } = paginate(movies, page);
+    return { meta: { totalResults: results.length, hasNext }, results };
   } catch (e: any) {
     throw INTERNAL_ERROR;
   }

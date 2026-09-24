@@ -1,5 +1,5 @@
 import { getRecent } from "@/scrapper";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 const INTERNAL_ERROR = new Error(
   "Something Went Wrong. Please Check your Request",
@@ -10,7 +10,7 @@ const TYPE = {
   CHINESE: 3,
 };
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     if (!req.url) throw INTERNAL_ERROR;
     let url = new URL(req.url);

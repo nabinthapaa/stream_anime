@@ -1,5 +1,8 @@
 import axios from "axios";
 
+// GET route handlers were statically cached by default before Next 15; keep that behavior.
+export const dynamic = "force-static";
+
 export async function GET() {
   try {
     let url =

@@ -1,9 +1,9 @@
 import { getAllTimePopular } from "@/scrapper/getAllTimePopular";
 import { URLParser } from "@/utils";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export const dynamic = "force-dynamic";
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     let parser = new URLParser(req.url);
     let page = parser.getParam("page");

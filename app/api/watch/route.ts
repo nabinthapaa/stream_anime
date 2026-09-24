@@ -1,6 +1,6 @@
 import { getLink } from "@/scrapper";
 import axios from "axios";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 export interface Links {
   movie_id: string | undefined;
@@ -8,6 +8,8 @@ export interface Links {
   links: {
     [key: string]: string | undefined;
   };
+  // Same-origin (/api/video) MP4 URLs, best mirror first
+  sources?: string[];
   download: string;
   videos: {
     url: string;
@@ -35,7 +37,7 @@ async function getVideo(link: string | undefined) {
   }
 }
 
-export async function GET(req: NextRequest, res: NextResponse) {
+export async function GET(req: NextRequest) {
   try {
     let url = req.url ? new URL(req.url) : null;
     let ep_id = url?.searchParams.get("ep_id");

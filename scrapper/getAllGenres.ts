@@ -1,22 +1,11 @@
-import config from "@/utils/config";
-import axios from "axios";
-import * as cheerio from "cheerio";
+// animeheaven has no page listing every tag, so expose the common ones.
+// Each id is usable as `tags.php?tag=<id>`.
+const GENRES = [
+  "Action", "Adventure", "Comedy", "Drama", "Fantasy", "Horror", "Isekai", "Mecha", "Music",
+  "Mystery", "Psychological", "Romance", "Sci-Fi", "Slice of Life", "Sports", "Supernatural", "Thriller",
+];
 
 export async function getAllGenres() {
-  try {
-    let url = config.website as string;
-    let { data } = await axios.get(url);
-    let $ = cheerio.load(data);
-    let genres: { [key: string]: string | undefined }[] = [];
-    $(".menu_series.genre ul li").each((_, el) => {
-      let id = $(el).find("a").attr("href")?.replace("/genre/", "");
-      let genre = $(el).find("a").attr("title");
-      genres.push({ id, genre });
-    });
-    return { totalGenres: genres.length, genres };
-  } catch (e: any) {
-    return new Response(JSON.stringify({ message: e.message }), {
-      status: 500,
-    });
-  }
+  let genres = GENRES.map((genre) => ({ id: genre, genre }));
+  return { totalGenres: genres.length, genres };
 }

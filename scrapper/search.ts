@@ -1,25 +1,11 @@
-import axios from "axios";
-import * as cheerio from "cheerio";
-import { scrapeCard } from "./scrapeCard";
 import { NOT_FOUND_ERROR } from "@/utils";
-import config from "@/utils/config";
+import { load, paginate, parseTiles, toSeriesCard } from "./helpers";
 
 export async function search(key: string, page?: number) {
   try {
-    let url = `${config.website}/search.html?keyword=${key.replaceAll(
-      " ",
-      "%20",
-    )}&page=${page}`;
-    let response = await axios.get(url);
-    let data = response.data;
-    const $ = cheerio.load(data);
-    //@ts-ignore
-    let results = scrapeCard($(".last_episodes").html(), true);
-    let meta = {
-      totalResults: results.length,
-      hasNext: $(".pagination .selected").next().length ? true : false,
-    };
-    return { meta, results };
+    let $ = await load(`/search.php?s=${encodeURIComponent(key)}`);
+    let { results, hasNext } = paginate(parseTiles($).map(toSeriesCard), page);
+    return { meta: { totalResults: results.length, hasNext }, results };
   } catch (e: any) {
     throw NOT_FOUND_ERROR;
   }

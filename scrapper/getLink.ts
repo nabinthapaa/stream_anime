@@ -1,27 +1,25 @@
 import { NOT_FOUND_ERROR } from "@/utils";
-import axios from "axios";
-import * as cheerio from "cheerio";
-import config from "@/utils/config";
+import { getAHAnime, getAHVideos } from "./animeheaven";
+import { episodeNumber, proxiedVideo, toAnimeId } from "./helpers";
 
 export async function getLink(ep_id: string) {
   try {
-    let url_str = `${config.website}/${ep_id}`;
-    let response = await axios.get(url_str);
-    let $ = cheerio.load(response.data);
-    let alias_name = $("#alias_anime").attr("value");
-    let Links = new Map();
-    $(".anime_muti_link ul li").each((_, el) => {
-      let link1 = $(el).find("a");
-      let server_name = $(el).attr("class");
-      let server_link = link1.attr("data-video");
-      Links.set(server_name, server_link);
-    });
-    let movie_id = $("#movie_id").attr("value");
-    let links = Object.fromEntries(Links);
+    let id = toAnimeId(ep_id);
+    let number = episodeNumber(ep_id);
+    if (!id || !number) throw NOT_FOUND_ERROR;
+    // Gate keys rotate, so look up the current key for this episode every time
+    let anime = await getAHAnime(id);
+    let episode = anime.episodes.find((e) => e.number === number);
+    if (!episode) throw NOT_FOUND_ERROR;
+    let videos = await getAHVideos(episode.key);
+    let sources = videos.sources.map(proxiedVideo);
+    if (!sources.length) throw NOT_FOUND_ERROR;
     return {
-      movie_id,
-      alias_name,
-      links,
+      movie_id: id,
+      alias_name: id,
+      // Mirrors of the same MP4, in the order the site prefers them
+      links: Object.fromEntries(sources.map((src, i) => [`mirror-${i + 1}`, src])),
+      sources,
     };
   } catch (e: any) {
     throw NOT_FOUND_ERROR;

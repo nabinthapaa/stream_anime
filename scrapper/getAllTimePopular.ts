@@ -1,21 +1,11 @@
 import { INTERNAL_ERROR } from "@/utils";
-import config from "@/utils/config";
-import axios from "axios";
-import * as cheerio from "cheerio";
-import { scrapeCard } from "./scrapeCard";
+import { load, paginate, parseCharts, toSeriesCard } from "./helpers";
 
 export async function getAllTimePopular(page?: string) {
   try {
-    let url = `${config.website}/popular.html?page=${page}`;
-    let { data } = await axios.get(url);
-    let $ = cheerio.load(data);
-    //@ts-ignore
-    let results = scrapeCard($(".last_episodes").html(), true);
-    let meta = {
-      totalResults: results.length,
-      hasNext: $(".pagination .selected").next().length ? true : false,
-    };
-    return { meta, results };
+    let $ = await load("/popular.php");
+    let { results, hasNext } = paginate(parseCharts($).map(toSeriesCard), page);
+    return { meta: { totalResults: results.length, hasNext }, results };
   } catch (e: any) {
     throw INTERNAL_ERROR;
   }
