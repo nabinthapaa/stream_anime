@@ -1,52 +1,49 @@
 import NextPreviousButton from "@/components/NextButton";
-import CardSkeleton from "@/skeleton/Card";
+import { ButtonLink } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { FilterTabs } from "@/components/ui/FilterTabs";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { GRID_SIZES, PosterCard } from "@/components/ui/PosterCard";
+import { PosterGrid } from "@/components/ui/PosterGrid";
+import { titleCase, infoHref } from "@/components/ui/format";
+import { PAGE_TOP } from "@/components/ui/layout";
+import { GridSkeleton } from "@/skeleton/Card";
 import config from "@/utils/config";
 import axios from "axios";
-import Image from "next/image";
+import type { Metadata } from "next";
 import { Suspense } from "react";
-// TODO: Tabs for ongoing-popular and popular
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+
+export const metadata: Metadata = { title: "Popular" };
+
+export default async function Page(
+  props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   let page = Number(searchParams?.page) || 1;
   let type = searchParams.type || "";
-  const _ = ["bg-green-300", "border-green-300"];
   return (
-    <>
-      <div className="container space-x-4 mt-3 mx-auto">
-        <a
-          className={`${
-            type === "og" ? "bg-green-300" : "border-green-300"
-          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
-          href={`?page=${page}&type=og`}
-        >
-          Ongoing
-        </a>
-        <a
-          className={`${
-            type !== "og" ? "bg-green-300" : "border-green-300"
-          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
-          href={`?page=${page}`}
-        >
-          All Time
-        </a>
-      </div>
-      <div className="container mx-auto flex flex-wrap gap-4 last:self-start">
-        <Suspense fallback={<Skeleton />}>
+    <div className={`px-page pb-16 ${PAGE_TOP}`}>
+      <PageHeader
+        title="Popular"
+        description={type === "og" ? "What everyone is watching this season." : "The most watched titles of all time."}
+      >
+        <FilterTabs
+          label="Popularity"
+          tabs={[
+            { label: "All Time", href: "/popular", active: type !== "og" },
+            { label: "Airing Now", href: "?type=og", active: type === "og" },
+          ]}
+        />
+      </PageHeader>
+      <div className="mt-8">
+        <Suspense key={`${type}-${page}`} fallback={<GridSkeleton />}>
           <Popular page={page} type={type} />
         </Suspense>
       </div>
-      <NextPreviousButton page={page} type={type} />
-    </>
+    </div>
   );
-}
-
-function Skeleton() {
-  return Array.from({ length: 20 }).map((_, index: number) => (
-    <CardSkeleton key={index} />
-  ));
 }
 
 interface Element {
@@ -85,55 +82,41 @@ async function Popular({
     const res = await axios.get(`${config.hostname}/api/popular?page=${page}`);
     data = res.data;
   }
-  return data?.results.map((element: Element, _: number) => (
-    <a
-      href={`/info/${element.id}`}
-      aria-label={"Info " + element.name}
-      key={element.id}
-      className="rounded-md p-4  w-fit space-y-1"
-    >
-      <div className="relative h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
-        <Image src={element.img} alt={element.name} width={500} height={500} />
-        {element.isDub ? (
-          <span className="absolute  text-md font-bold px-4 py-1 bg-red-800 top-0 right-0">
-            Dub
-          </span>
-        ) : null}
-      </div>
-      <div>
-        <div
-          title={element.name}
-          className="w-32 md:w-48 line-clamp-1 overflow-hidden overflow-ellipsis"
-        >
-          <h3 className="font-md text-lg">{element.name}</h3>
-        </div>
-        <div className="h-4 w-32 md:w-48 rounded-full mt-1 max-w-sm">
-          <p className="font-light text-sm">
-            {element.date
-              ? `Released ${element.date}`
-              : element.genres
-                ? element.genres.map((e, i) => {
-                    if (i > 1) return null;
-                    return <Genres key={e} genre={e} i={i} />;
-                  })
-                : "( Sub )"}
-          </p>
-        </div>
-      </div>
-    </a>
-  ));
-}
+  const results: Element[] = data?.results ?? [];
 
-function titleCase(word: string) {
-  return word.charAt(0).toUpperCase() + word.substring(1);
-}
+  if (!results.length) {
+    return (
+      <EmptyState
+        title={page > 1 ? "You've reached the end" : "Nothing popular yet"}
+        message={page > 1 ? "There are no more titles on this list." : "We couldn't find any titles for this list right now."}
+      >
+        <ButtonLink href={type === "og" ? "?type=og" : "/popular"}>{page > 1 ? "Back to page 1" : "Refresh"}</ButtonLink>
+      </EmptyState>
+    );
+  }
 
-function Genres({ genre, i }: { genre: string; i: number }) {
   return (
-    <span
-      className={`${i !== 0 ? "ml-2" : ""} text-xs px-2 bg-purple-500 py-1 rounded-lg`}
-    >
-      {titleCase(genre)}
-    </span>
+    <>
+      <PosterGrid label="Popular titles">
+        {results.map((element) => (
+          <PosterCard
+            key={element.id}
+            href={infoHref(element.id)}
+            title={element.name}
+            image={element.img}
+            badge={element.isDub ? "Dub" : undefined}
+            meta={
+              element.date
+                ? `Released ${element.date}`
+                : element.genres?.length
+                  ? element.genres.slice(0, 2).map(titleCase).join(" • ")
+                  : "Sub"
+            }
+            sizes={GRID_SIZES}
+          />
+        ))}
+      </PosterGrid>
+      <NextPreviousButton page={page} type={type} hasNext={data?.meta?.hasNext ?? true} />
+    </>
   );
 }

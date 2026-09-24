@@ -1,43 +1,43 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
+/** Synopsis clamped to four lines with an accessible "More / Less" toggle. */
 export function Plot({ data }: { data: string }) {
-  const [showMore, setShowMore] = useState(false);
-  const [isOverflowing, setisOverflowing] = useState(true)
-  const el = useRef<HTMLParagraphElement | null>(null);
-  useEffect(()=>{
-    if (el.current) setisOverflowing(checkOverFlow(el.current))
-  },[isOverflowing])
-  const _ = ["line-clamp-3", "sm:mb-16", "mb-16"];
+  const [expanded, setExpanded] = useState(false);
+  const [overflowing, setOverflowing] = useState(false);
+  const el = useRef<HTMLDivElement | null>(null);
+  const id = useId();
+
+  useEffect(() => {
+    const node = el.current;
+    if (!node) return;
+    // Measure once the clamp is applied; re-measure on resize.
+    const observer = new ResizeObserver(() => {
+      if (!expanded) setOverflowing(node.scrollHeight > node.clientHeight + 1);
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [expanded]);
+
   return (
-    <div className={`w-full ${showMore ? "mb-10 sm:mb-16" : ""}`}>
-      <p
+    <div className="max-w-2xl">
+      <div
         ref={el}
-        className={`text-md ${!showMore ? "line-clamp-4" : ""}`}
+        id={id}
+        className={`text-sm leading-relaxed text-neutral-200 md:text-base [&_a]:underline [&_i]:italic ${expanded ? "" : "line-clamp-4"}`}
         dangerouslySetInnerHTML={{ __html: data }}
-      >
-        {/* {data.replaceAll(/<.*>/g, "")} */}
-      </p>
-      {isOverflowing && (
+      />
+      {(overflowing || expanded) && (
         <button
-          className="text-xs font-bold bg-gray-200 rounded-lg py-1 px-2 dark:bg-gray-500"
-          onClick={() => setShowMore(!showMore)}
+          type="button"
+          aria-expanded={expanded}
+          aria-controls={id}
+          className="-mx-2 mt-1 min-h-11 rounded-sm px-2 text-sm font-semibold text-white hover:text-accent-text sm:min-h-9"
+          onClick={() => setExpanded(!expanded)}
         >
-          Show {!showMore ? "More" : "Less"}
+          {expanded ? "Show less" : "Read more"}
         </button>
       )}
     </div>
   );
-}
-
-function checkOverFlow(el: HTMLParagraphElement | null) {
-  if (!el) return true;
-  let currentheight = el.style.height;
-  let currentOverflow = el.style.overflow;
-  el.style.height = "70px";
-  el.style.overflow = "hidden";
-  let isOverflowing = el.clientHeight < el.scrollHeight;
-  el.style.height = currentheight;
-  el.style.overflow = currentOverflow;
-  return isOverflowing;
 }

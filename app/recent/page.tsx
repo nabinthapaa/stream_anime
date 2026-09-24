@@ -1,65 +1,37 @@
 import { default as NextPreviousButton } from "@/components/NextButton";
-import CardSkeleton from "@/skeleton/Card";
+import { ButtonLink } from "@/components/ui/Button";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { PageHeader } from "@/components/ui/PageHeader";
+import { GRID_SIZES, PosterCard } from "@/components/ui/PosterCard";
+import { PosterGrid } from "@/components/ui/PosterGrid";
+import { PAGE_TOP } from "@/components/ui/layout";
+import { GridSkeleton } from "@/skeleton/Card";
 import config from "@/utils/config";
 import axios from "axios";
-import Image from "next/image";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
-export default function Page({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
+export const metadata: Metadata = { title: "Recent Episodes" };
+
+
+export default async function Page(
+  props: {
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  }
+) {
+  const searchParams = await props.searchParams;
   let page = Number(searchParams?.page) || 1;
   let type = searchParams.type || "SUB";
   return (
-    <>
-      <div className="container space-x-4 mt-6 mx-auto">
-        <a
-          className={`${
-            type === "SUB"
-              ? "bg-green-300 dark:bg-green-600"
-              : "border-green-300 dark:border-green-600"
-          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
-          href={`?page=${page}&type=SUB`}
-        >
-          SUB
-        </a>
-        <a
-          className={`${
-            type === "DUB"
-              ? "bg-green-300 dark:bg-green-600"
-              : "border-green-300 dark:border-green-600"
-          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
-          href={`?page=${page}&type=DUB`}
-        >
-          DUB
-        </a>
-        <a
-          className={`${
-            type === "CHINESE"
-              ? "bg-green-300 dark:bg-green-600"
-              : "border-green-300 dark:border-green-600"
-          } border-2 font-bold text-md px-4 py-2 rounded-lg`}
-          href={`?page=${page}&type=CHINESE`}
-        >
-          CHINESE
-        </a>
-      </div>
-      <div className="container mx-auto mt-10 flex flex-wrap gap-4 last:self-start">
-        <Suspense fallback={<Skeleton />}>
+    <div className={`px-page pb-16 ${PAGE_TOP}`}>
+      <PageHeader title="Recent Episodes" description="The latest subbed episodes as they land, newest first." />
+      <div className="mt-8">
+        <Suspense key={`${type}-${page}`} fallback={<GridSkeleton />}>
           <Recent page={page} type={type} />
         </Suspense>
       </div>
-      <NextPreviousButton page={page} type={type} />
-    </>
+    </div>
   );
-}
-
-function Skeleton() {
-  return Array.from({ length: 20 }).map((_, index: number) => (
-    <CardSkeleton key={index} />
-  ));
 }
 
 async function Recent({
@@ -73,27 +45,35 @@ async function Recent({
   const { data } = await axios.get(
     `${config.hostname}/api/recent?page=${page}&type=${type}`,
   );
-  return data?.results.map((element: any, _: any) => (
-    <a
-      href={`/watch/${element.ep_id}`}
-      aria-label={"Info " + element.name}
-      key={element.id}
-      className="rounded-md p-4  w-fit space-y-1"
-    >
-      <div className="h-48 w-32 md:h-64 md:w-48 rounded-xl overflow-hidden">
-        <Image src={element.img} alt={element.name} width={500} height={500} />
-      </div>
-      <div>
-        <div
-          title={element.name}
-          className="w-32 md:w-48 line-clamp-1 overflow-hidden overflow-ellipsis"
-        >
-          <h3 className="font-md text-lg">{element.name}</h3>
-        </div>
-        <div className="h-4 w-1/2 rounded-full max-w-sm">
-          <p className="font-light text-sm">{element.episode}</p>
-        </div>
-      </div>
-    </a>
-  ));
+  const results: any[] = data?.results ?? [];
+
+  if (!results.length) {
+    return (
+      <EmptyState
+        title={page > 1 ? "You've reached the end" : "No new episodes yet"}
+        message={page > 1 ? "There are no more recent episodes." : "Nothing new has been released yet. Check back soon."}
+      >
+        {page > 1 ? <ButtonLink href="/recent">Back to page 1</ButtonLink> : <ButtonLink href="/popular">Browse popular</ButtonLink>}
+      </EmptyState>
+    );
+  }
+
+  return (
+    <>
+      <PosterGrid label="Recent episodes">
+        {results.map((element: any) => (
+          <PosterCard
+            key={element.ep_id ?? element.id}
+            href={`/watch/${element.ep_id}`}
+            action="play"
+            title={element.name}
+            image={element.img}
+            meta={element.episode}
+            sizes={GRID_SIZES}
+          />
+        ))}
+      </PosterGrid>
+      <NextPreviousButton page={page} type={type} hasNext={data?.meta?.hasNext ?? true} />
+    </>
+  );
 }

@@ -1,84 +1,280 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"); */
-/* Box sizing rules */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  /* font-family: "Poppins", sans-serif; */
+/* Scan exactly the folders that contain markup (no `pages/` dir exists). */
+@import "tailwindcss" source(none);
+@source "../app";
+@source "../components";
+@source "../skeleton";
+
+/*
+  Design tokens. Dark-first, one accent. Components use these names
+  (bg-canvas, bg-surface, text-accent, px-page, shadow-card, ...) instead of hex values.
+*/
+@theme {
+  /* Canvas and layered surfaces */
+  --color-canvas: #141414;
+  --color-surface: #181818; /* panels, popups, the title-details sheet */
+  --color-surface-raised: #202020;
+  --color-surface-overlay: #2a2a2a;
+  --color-surface-hover: #333333; /* hovered / current list row */
+  --color-line: #404040; /* 1px dividers */
+  --color-line-subtle: #2a2a2a;
+
+  /*
+    Brand accent: cinematic blue. Contrast (WCAG):
+    - accent        #2F7CF6  4.99:1 on canvas -> indicators, rings, large text
+    - accent-strong #1A66F0  5.0:1 with white text -> filled chips, tiles, badges
+    - accent-hover  #1B5FD9  5.7:1 with white text -> hover state of filled elements
+    - accent-text   #5B9BFF  7.1:1 on canvas -> small accent text and links
+  */
+  --color-accent: #2f7cf6;
+  --color-accent-strong: #1a66f0;
+  --color-accent-hover: #1b5fd9;
+  --color-accent-text: #5b9bff;
+  --color-accent-tint: rgb(47 124 246 / 0.16);
+
+  /* Errors are the only place red appears. */
+  --color-danger: #f2555a;
+
+  /* Positive signal (ratings) */
+  --color-positive: #46d369;
+
+  /* Extra-wide breakpoints (named, so they sort after 2xl in the generated CSS) */
+  --breakpoint-3xl: 112.5rem; /* 1800px */
+  --breakpoint-4xl: 137.5rem; /* 2200px */
+
+  /* Page gutter (60px max, ~4vw): shared by nav, billboard, rows and grids so edges align */
+  --spacing-page: clamp(1rem, 4vw, 3.75rem);
+  /* Fixed navbar height: 64px on phones, 80px from md (overridden below) */
+  --spacing-nav: 4rem;
+
+  --shadow-card: 0 12px 28px -6px rgb(0 0 0 / 0.75), 0 4px 10px -4px rgb(0 0 0 / 0.6);
+  --shadow-poster: 0 24px 48px -12px rgb(0 0 0 / 0.8);
+
+  --ease-cinematic: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* Hover preview "pop" */
+  --ease-pop: cubic-bezier(0.32, 0.94, 0.6, 1);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-in: fade-in 250ms var(--ease-cinematic) both;
+  --animate-fade-up: fade-up 300ms var(--ease-cinematic) both;
+
+  --animate-modal-in: modal-in 250ms var(--ease-pop) both;
+  --animate-sheet-in: sheet-in 300ms var(--ease-pop) both;
+  --animate-backdrop-in: fade-in 200ms linear both;
+
+  /* Player feedback */
+  --animate-player-flash: player-flash 400ms ease-out forwards;
+  --animate-player-ripple: player-ripple 600ms ease-out forwards;
+
+  @keyframes player-flash {
+    from {
+      opacity: 0.9;
+      transform: scale(0.8);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.35);
+    }
+  }
+  @keyframes player-ripple {
+    0% {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    20% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(1.1);
+    }
+  }
+  @keyframes modal-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  @keyframes sheet-in {
+    from {
+      transform: translateY(100%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
-/* Remove default margin */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-figure,
-blockquote,
-dl,
-dd {
-  margin: 0;
+/* `next/font` exposes Inter as a CSS variable on <html>. */
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
-ul[role="list"],
-ol[role="list"] {
-  list-style: none;
+/* Skeleton placeholder surface with a moving highlight. */
+@utility skeleton {
+  background-color: var(--color-surface-raised);
+  background-image: linear-gradient(
+    90deg,
+    var(--color-surface-raised) 0%,
+    var(--color-surface-overlay) 50%,
+    var(--color-surface-raised) 100%
+  );
+  background-size: 200% 100%;
+  animation: var(--animate-shimmer);
 }
 
-/* Set core root defaults */
-html:focus-within {
-  scroll-behavior: smooth;
+/* Horizontal scrollers hide their scrollbar; they stay scrollable by touch, wheel and keyboard. */
+@utility scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
-/* Set core body defaults */
-body {
-  min-height: 100vh;
-  text-rendering: optimizeSpeed;
-  line-height: 1.5;
-}
-
-/* A elements that don't have a class get default styles */
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
-
-/* Make images easier to work with */
-img,
-picture {
-  max-width: 100%;
-  display: block;
-}
-
-/* Inherit fonts for inputs and buttons */
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-/* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
-@media (prefers-reduced-motion: reduce) {
-  html:focus-within {
-    scroll-behavior: auto;
+@layer base {
+  @media (min-width: 48rem) {
+    :root {
+      --spacing-nav: 5rem;
+    }
   }
 
+  html {
+    color-scheme: dark;
+    /* Reserve the scrollbar so locking scroll for the modal never shifts the page */
+    scrollbar-gutter: stable;
+    background-color: var(--color-canvas);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* v4 uses currentcolor for borders; a quiet hairline suits the dark UI better. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-line-subtle, currentcolor);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-neutral-400);
+  }
+
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* One consistent, highly visible keyboard focus ring. */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: var(--color-accent-strong);
+    color: var(--color-white);
+  }
+}
+
+/*
+  Custom reset. Kept in `base` so utilities still win under v4 cascade layers.
+*/
+@layer base {
   *,
   *::before,
   *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    box-sizing: border-box;
   }
-}
 
-.plyr {
-  height: 100%;
-  --plyr-color-main: red;
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+
+  ul[role="list"],
+  ol[role="list"] {
+    list-style: none;
+  }
+
+  html:focus-within {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-height: 100vh;
+    text-rendering: optimizeSpeed;
+    line-height: 1.5;
+  }
+
+  a:not([class]) {
+    text-decoration-skip-ink: auto;
+  }
+
+  img,
+  picture {
+    max-width: 100%;
+    display: block;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+
+  /* Remove all animations, transitions and smooth scroll for people that prefer not to see them */
+  @media (prefers-reduced-motion: reduce) {
+    html:focus-within {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
