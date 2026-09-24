@@ -52,6 +52,7 @@ export function MobileTabBar() {
   const isActive = useIsActive();
   return (
     <nav
+      data-site-chrome=""
       aria-label="Main"
       className="fixed inset-x-0 bottom-0 z-50 border-t border-line bg-canvas/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
     >

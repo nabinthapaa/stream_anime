@@ -208,6 +208,25 @@
 }
 
 /*
+  Theater routes (/watch): the player fills the viewport, so the page doesn't scroll and
+  the site chrome (nav, mobile tab bar, footer) is hidden. Set by <TheaterMode />.
+*/
+@layer base {
+  html[data-theater] {
+    overflow: hidden;
+  }
+
+  html[data-theater] body {
+    min-height: 0;
+    padding-bottom: 0;
+  }
+
+  html[data-theater] [data-site-chrome] {
+    display: none;
+  }
+}
+
+/*
   Custom reset. Kept in `base` so utilities still win under v4 cascade layers.
 */
 @layer base {

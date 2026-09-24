@@ -16,7 +16,7 @@ export function NavShell({ children }: { children: ReactNode }) {
     () => false,
   );
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    <header data-site-chrome="" className="fixed inset-x-0 top-0 z-50">
       <div aria-hidden="true" className="absolute inset-0 bg-linear-to-b from-black/80 to-transparent" />
       <div
         aria-hidden="true"

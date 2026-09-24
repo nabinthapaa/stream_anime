@@ -43,7 +43,7 @@ export default function RootLayout({
         <main id="main" className="flex-1">
           {children}
         </main>
-        <footer className="border-t border-line px-page py-8 text-xs text-neutral-400">
+        <footer data-site-chrome="" className="border-t border-line px-page py-8 text-xs text-neutral-400">
           <p>
             <span className="font-semibold text-neutral-400">Anime 101</span> is a personal project. Titles and artwork
             belong to their respective owners.

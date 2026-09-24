@@ -1,10 +1,10 @@
 import { Player, type PlayerEpisode } from "@/components/player/Player";
+import { TheaterMode } from "@/components/player/TheaterMode";
 import { ButtonLink } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import {
   episodeFromId,
   imageSrc,
-  infoHref,
   plainText,
   ratingLabel,
 } from "@/components/ui/format";
@@ -73,6 +73,9 @@ export default async function Watch(props: {
       progressKey: `resume:${ep.ep_id}`,
     }),
   );
+  const available = info?.availableEpisodes ?? [];
+  const availableIndex = available.findIndex((ep) => ep.number === current);
+  const nextRaw = availableIndex >= 0 ? available[availableIndex + 1] : undefined;
   const index = episodes.findIndex((ep) => ep.current);
   const prev = index > 0 ? episodes[index - 1] : undefined;
   const next =
@@ -82,7 +85,6 @@ export default async function Watch(props: {
   const poster = art
     ? getImageProps({ src: art, alt: "", width: 1280, height: 720 }).props.src
     : undefined;
-  const details = infoHref(animeId);
   const synopsis = plainText(info?.plot) || undefined;
   const advisory = [
     "Sub",
@@ -95,6 +97,7 @@ export default async function Watch(props: {
 
   return (
     <>
+      <TheaterMode />
       <section aria-label="Player" className="relative z-[55] bg-black">
         {sources.length ? (
           <Player
@@ -118,10 +121,18 @@ export default async function Watch(props: {
             synopsis={synopsis}
             advisory={advisory}
             artwork={art}
-            sourcesHref={details}
+            continueWatching={{
+              id: animeId,
+              title: name,
+              image: art,
+              epId: id,
+              epNumber: current,
+              nextEpId: nextRaw?.ep_id,
+              nextEpNumber: nextRaw?.number,
+            }}
           />
         ) : (
-          <div className="grid aspect-video place-items-center px-page md:aspect-auto md:h-svh">
+          <div className="grid h-dvh place-items-center px-page">
             <EmptyState
               tone="error"
               title="This episode isn't available"
